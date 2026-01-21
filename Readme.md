@@ -83,3 +83,11 @@ Students lose clarity because applications, notes, and mentor advice live in dif
 
 > **HUSTL is where applications meet direction — and effort turns into outcomes.**
 
+## Technology Orientation – Learnings
+
+In this sprint, I learned how a modern full-stack application is structured using Next.js and cloud technologies.
+
+I understood the role of Next.js in handling both frontend and backend logic, and how databases like PostgreSQL connect to the application through Prisma ORM.
+
+I also learned how Redis improves performance through caching, how Docker ensures consistent environments, and how CI/CD with AWS or Azure helps in deploying and scaling applications.
+
