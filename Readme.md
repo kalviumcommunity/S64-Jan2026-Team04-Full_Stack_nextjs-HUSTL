@@ -91,3 +91,5 @@ I understood the role of Next.js in handling both frontend and backend logic, an
 
 I also learned how Redis improves performance through caching, how Docker ensures consistent environments, and how CI/CD with AWS or Azure helps in deploying and scaling applications.
 
+## Project design : 
+https://www.figma.com/make/xo6SeFvdXo8p76j90awTzE/HUSTL-Web-Dashboard-UI?fullscreen=1&t=xBwzfsk68rARVcMs-1
