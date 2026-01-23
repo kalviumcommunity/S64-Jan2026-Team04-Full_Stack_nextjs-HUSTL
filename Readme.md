@@ -78,6 +78,50 @@ Students lose clarity because applications, notes, and mentor advice live in dif
 **Project:** HUSTL
 
 ---
+Perfect 👍
+Below is a **clean, minimal “Concept-1” section** that fits naturally into your **existing README** without making it bulky or overly technical.
+
+👉 You can **copy-paste this directly** into your README (best place: **after Tech Stack** or **before Future Enhancements**).
+
+---
+
+## 🧩 Concept 1 – Advanced Data Fetching & Rendering Strategy
+
+HUSTL uses **Next.js App Router** rendering strategies to balance performance, scalability, and data freshness by combining **Static**, **Dynamic**, and **Hybrid** rendering approaches.
+
+### Rendering Strategies Used
+
+**Static Rendering (SSG)**
+Used for public pages such as the Landing page and informational content.
+These pages are pre-rendered and load instantly for all users.
+
+**Dynamic Rendering (SSR)**
+Used for authenticated dashboards (Student, Mentor, Admin).
+These pages require real-time, user-specific data and are rendered on each request to ensure accuracy and security.
+
+**Hybrid Rendering (ISR)**
+Used for internship listings and internship detail pages.
+This allows pages to load quickly like static pages while periodically updating to reflect new or closed internships.
+
+### Why This Approach?
+
+* Improves performance for public and high-traffic pages
+* Reduces server load and infrastructure cost
+* Ensures real-time accuracy for personalized dashboards
+* Scales efficiently as the number of users increases
+
+### Scalability Reflection
+
+If HUSTL scales to a significantly larger user base, static and hybrid rendering will be preferred wherever possible, while dynamic rendering will remain limited to critical authenticated pages only.
+
+---
+
+### 🔗 Related Documentation
+
+Detailed rendering strategy documentation is available here:
+📄 `docs/rendering-strategy.md`
+
+---
 
 ## ⭐ Final Line
 
