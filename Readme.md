@@ -123,6 +123,42 @@ Detailed rendering strategy documentation is available here:
 
 ---
 
+## [Concept 2] Environment Segregation & Secure Secrets Management
+
+### Why environment segregation is essential
+
+Environment segregation (development, staging, production) is critical in modern deployments because it prevents unfinished or unsafe changes from affecting real users and live data. In our project HUSTL, separate environments ensure that development, testing, and production deployments remain isolated.
+
+We use:
+- Development for local testing and feature development
+- Staging for validating features in a production-like setup
+- Production for live users and real internship data
+
+Each environment has its own configuration file:
+.env.development, .env.staging, and .env.production, ensuring the app always connects to the correct services.
+
+### Secure secret management in CI/CD
+
+Sensitive information such as database URLs, JWT secrets, and cloud credentials are never committed to the repository. Instead, we store them securely using GitHub Secrets and inject them during the CI/CD pipeline.
+
+This approach improves safety and reliability by preventing secret leaks, avoiding environment mix-ups, and enabling secure automated deployments.
+
+---
+
+### Case Study: The Staging Secret That Broke Production
+
+The issue occurred because staging database credentials were mistakenly used in production, causing live data to be overwritten. This happened due to poor environment separation and insecure secret handling.
+
+This could have been prevented by:
+- Strictly separating environment configuration files
+- Using secure secret managers like GitHub Secrets, AWS Parameter Store, or Azure Key Vault
+- Injecting environment-specific secrets only during build or runtime
+
+In HUSTL, this setup ensures production builds can only access production credentials, protecting live user and internship data.
+
+---
+
+
 ## ⭐ Final Line
 
 > **HUSTL is where applications meet direction — and effort turns into outcomes.**
