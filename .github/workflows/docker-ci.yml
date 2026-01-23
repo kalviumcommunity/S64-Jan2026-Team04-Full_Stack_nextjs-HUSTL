@@ -1,0 +1,13 @@
+name: Docker CI Demo
+
+on:
+  push:
+    branches:
+      - cloud-deployments-101
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: cd docker-demo && docker build -t hustl-demo .
