@@ -217,6 +217,44 @@ Direct commits to the `main` branch are not allowed. All changes must go through
 
 ---
 
+## 🗄️ PostgreSQL Schema Design
+
+### Core Entities
+The database schema includes the following entities:
+- User
+- Internship
+- Application
+- EligibilityTest
+- TestQuestion
+- TestAttempt
+- Feedback
+
+### Relationships & Constraints
+- One user can apply to multiple internships
+- One internship can have multiple applications
+- Each internship has one eligibility test
+- Each test contains multiple questions
+- Applications store mentor feedback
+- Foreign keys enforce relational integrity
+- Unique constraints prevent duplicate users
+- Cascade deletes ensure data consistency
+
+### Normalization
+- 1NF: All fields are atomic
+- 2NF: No partial dependency on composite keys
+- 3NF: No redundant or derived data stored
+
+### Scalability & Query Support
+This schema supports efficient querying for:
+- Fetching student applications
+- Listing applicants for an internship
+- Retrieving mentor feedback
+- Verifying eligibility test results
+
+The normalized design ensures scalability, consistency, and performance as the system grows.
+
+--- 
+
 ### 📄 Pull Request (PR) Template
 
 A standardized Pull Request template is used to ensure clarity and consistency during reviews.
