@@ -1,0 +1,95 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+
+model User {
+  id           Int           @id @default(autoincrement())
+  name         String
+  email        String        @unique
+  password     String
+  role         Role
+  applications Application[]
+  testAttempts TestAttempt[]
+  feedbacks    Feedback[]
+  createdAt    DateTime      @default(now())
+}
+
+model Internship {
+  id           Int            @id @default(autoincrement())
+  title        String
+  description  String
+  minimumScore Int
+  status       String
+  applications Application[]
+  test         EligibilityTest?
+  createdAt    DateTime       @default(now())
+}
+
+model Application {
+  id            Int         @id @default(autoincrement())
+  userId        Int
+  internshipId  Int
+  status        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  internship    Internship @relation(fields: [internshipId], references: [id], onDelete: Cascade)
+  feedbacks     Feedback[]
+  createdAt     DateTime    @default(now())
+}
+
+model EligibilityTest {
+  id            Int             @id @default(autoincrement())
+  internshipId  Int             @unique
+  internship    Internship      @relation(fields: [internshipId], references: [id], onDelete: Cascade)
+  questions     TestQuestion[]
+  attempts      TestAttempt[]   // 👈 ADD THIS LINE
+}
+
+
+model TestQuestion {
+  id        Int             @id @default(autoincrement())
+  testId    Int
+  question  String
+  options   String
+  answer    String
+  test      EligibilityTest @relation(fields: [testId], references: [id], onDelete: Cascade)
+}
+
+model TestAttempt {
+  id        Int             @id @default(autoincrement())
+  userId    Int
+  testId    Int
+  score     Int
+  passed    Boolean
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  test      EligibilityTest @relation(fields: [testId], references: [id], onDelete: Cascade)
+  createdAt DateTime        @default(now())
+}
+
+model Feedback {
+  id            Int         @id @default(autoincrement())
+  mentorId      Int
+  applicationId Int
+  comment       String
+  mentor        User        @relation(fields: [mentorId], references: [id], onDelete: Cascade)
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  createdAt     DateTime    @default(now())
+}
+
+enum Role {
+  STUDENT
+  MENTOR
+  ADMIN
+}
+
