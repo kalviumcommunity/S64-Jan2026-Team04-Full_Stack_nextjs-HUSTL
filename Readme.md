@@ -305,6 +305,23 @@ This workflow encourages disciplined collaboration by enforcing reviews and stru
 
 > HUSTL uses a professional GitHub workflow with structured branching, PR templates, reviews, and protected branches to ensure high code quality and smooth team collaboration.
 
+---
+
+---
+## Environment Variables
+
+This project uses environment variables for configuration.
+
+### Server-only
+- DATABASE_URL – Database connection string
+
+### Client-side
+- NEXT_PUBLIC_API_BASE_URL – API base URL
+
+### Setup
+1. Copy `.env.example` to `.env.local`
+2. Fill in actual values
+3. Never commit `.env.local`
 
 ---
 
