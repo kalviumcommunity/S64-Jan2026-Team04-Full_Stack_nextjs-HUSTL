@@ -2,7 +2,7 @@
 
 > **“Stop juggling tabs. Start hustling smart.”**
 
-**HUSTL** is a unified internship and mentorship platform that helps students track internship applications, organize mentor feedback, and turn guidance into real progress — all from a single dashboard.
+**HUSTL** is a unified internship and mentorship platform that helps students track internship applications, manage mentor feedback, and turn guidance into measurable progress — all from a single dashboard.
 
 Built by **Team NoSleep 😴⚡** for students who refuse to fall behind.
 
@@ -14,7 +14,7 @@ Applying everywhere.
 Feedback everywhere.
 Progress? **Nowhere.**
 
-Students lose clarity because applications, notes, and mentor advice live in different places. **HUSTL fixes that** by giving students **one structured system** to track applications, reflect on feedback, and improve consistently.
+Students lose clarity because applications, notes, and mentor advice live in different tools. **HUSTL fixes this** by providing one structured system to track applications, reflect on feedback, and improve consistently.
 
 ---
 
@@ -55,273 +55,169 @@ Students lose clarity because applications, notes, and mentor advice live in dif
 * **Framework:** Next.js (App Router)
 * **UI:** React + Tailwind CSS
 * **Backend:** Next.js API Routes
+* **ORM:** Prisma
+* **Database:** Relational DB (SQLite for development, PostgreSQL-ready)
 * **Authentication:** JWT + HTTP-only cookies
-* **Database:** MongoDB + Mongoose
 * **Containerization:** Docker
 * **CI/CD:** GitHub Actions
-* **Deployment:** Vercel (App) / AWS or Azure (Demo Deployment)
+* **Deployment:** Vercel (App) / Cloud VM (Demo)
 * **Tools:** Git, GitHub, Postman
 
 ---
 
-## 🧩 Concept 1 – Advanced Data Fetching & Rendering Strategy
+## 🔁 Concept 1 – Transactions & Data Consistency
 
-HUSTL leverages **Next.js App Router** rendering strategies to balance performance, scalability, and data freshness using **Static**, **Dynamic**, and **Hybrid** rendering.
+HUSTL uses **Prisma transactions** to ensure **atomic operations** when multiple database actions must succeed or fail together.
 
-### Rendering Strategies Used
+### Example Use Case
 
-* **Static Rendering (SSG)**
-  Used for public pages such as the landing page and informational content. These pages are pre-rendered and load instantly.
+When a student applies for an internship:
 
-* **Dynamic Rendering (SSR)**
-  Used for authenticated dashboards (Student, Mentor, Admin) where real-time and user-specific data is required.
+1. Validate user existence
+2. Validate internship existence
+3. Create the application
 
-* **Hybrid Rendering (ISR)**
-  Used for internship listings and detail pages to enable fast load times while periodically refreshing data.
+All steps are wrapped in a transaction. If any step fails, **no partial data is written**.
 
-### Why This Approach?
+### Rollback Handling
 
-* Improves performance for public and high-traffic pages
-* Reduces server load and infrastructure cost
-* Ensures real-time accuracy for personalized dashboards
-* Scales efficiently as the user base grows
+Prisma automatically rolls back the transaction when an error is thrown inside the transaction block. This ensures:
 
-### Scalability Reflection
-
-As HUSTL scales, static and hybrid rendering will be preferred wherever possible, while dynamic rendering will remain limited to critical authenticated routes.
-
-📄 **Related Documentation:** `docs/rendering-strategy.md`
+* No orphaned records
+* No inconsistent application state
+* Strong data integrity
 
 ---
 
-## 🔐 Concept 2 – Environment Segregation & Secure Secrets Management
+## ⚡ Concept 2 – Query Optimization & Indexing
 
-### Why Environment Segregation Is Essential
+To improve read performance and scalability, database indexes are added to frequently queried fields.
 
-HUSTL uses **separate environments** to ensure safety and reliability:
+### Indexed Fields
 
-* **Development:** Local feature development and testing
-* **Staging:** Production-like testing before release
-* **Production:** Live users and real internship data
+* `Application.userId`
+* `Application.internshipId`
+* `Application.status`
+* `TestAttempt.userId`
+* `TestAttempt.testId`
+* `TestAttempt.createdAt`
+* `Feedback.mentorId`
+* `Feedback.applicationId`
 
-Each environment has its own configuration, ensuring changes in development or staging never impact production.
+### Benefits
 
----
+* Faster filtering and lookups
+* Reduced full-table scans
+* Improved dashboard and reporting queries
 
-### Secure Secret Management
-
-Sensitive data such as database URLs, authentication secrets, and cloud credentials are **never committed to the repository**.
-
-Instead:
-
-* Secrets are stored securely using **GitHub Secrets**
-* Values are injected only during build or runtime
-* Environment mix-ups are prevented by strict separation
-
----
-
-### Case Study: *The Staging Secret That Broke Production*
-
-A common failure scenario occurs when staging credentials are accidentally used in production, leading to data corruption.
-
-This is prevented in HUSTL by:
-
-* Strict environment separation
-* Secure secret managers (GitHub Secrets, AWS Parameter Store, Azure Key Vault)
-* Environment-specific secret injection
-
-This ensures production builds can access **only production credentials**.
+Indexes are managed using **Prisma migrations**, ensuring schema changes are versioned and reproducible.
 
 ---
 
-## ☁️ Concept 3 – Cloud Deployments 101: Docker → CI/CD → AWS/Azure
+## 🧪 Performance Verification
 
-HUSTL follows a modern cloud deployment workflow using **containerization**, **automation**, and **cloud infrastructure**.
+Query performance was validated using:
 
-### Docker
+* Prisma query logging
+* SQL `EXPLAIN` / query plan inspection
 
-The application is containerized using Docker to ensure consistent behavior across local development, CI pipelines, and production environments.
+After indexing:
 
-**Benefits:**
-
-* Eliminates “works on my machine” issues
-* Enables reproducible builds
-* Simplifies rollbacks using versioned images
+* Sequential scans were replaced with index scans
+* Query execution time was reduced for common access patterns
 
 ---
 
-### CI/CD Pipeline
-
-A GitHub Actions workflow automates the build process on every push or pull request.
-
-This ensures:
-
-* Early detection of build failures
-* Consistent deployment artifacts
-* Reduced manual deployment errors
-
----
-
-### Secure Configuration & Environment Management
-
-* Environment variables are stored using `.env` files locally
-* Sensitive values are excluded from version control
-* Production secrets are injected via AWS or Azure configuration
-* Secrets are never hardcoded into Docker images
-
----
-
-### Case Study: *The Never-Ending Deployment Loop*
-
-A deployment failure can occur when:
-
-* Environment variables are missing
-* Old containers continue running
-* Multiple containers bind to the same port
-
-These issues are resolved by:
-
-* Validating required environment variables at startup
-* Replacing running containers instead of parallel launches
-* Deploying versioned Docker images instead of `latest`
-
----
-
-### Reflection
-
-The most challenging part was understanding the separation between **build-time** and **runtime** configuration.
-Future improvements include health checks, staged deployments, and automated rollback strategies.
-
----
-
-## 🔁 Team Branching & PR Workflow Setup
-
-HUSTL follows a structured GitHub workflow inspired by real-world engineering teams to ensure clean collaboration, code quality, and traceability across the development process.
-
-### 🌿 Branch Naming Conventions
-
-All work is done on dedicated branches using a consistent naming pattern:
-
-* **feature/<feature-name>** – New features
-* **fix/<bug-name>** – Bug fixes
-* **chore/<task-name>** – Maintenance or setup tasks
-* **docs/<update-name>** – Documentation updates
-
-**Examples:**
-
-* `feature/login-auth`
-* `fix/navbar-alignment`
-* `docs/git-workflow-setup`
-
-Direct commits to the `main` branch are not allowed. All changes must go through a Pull Request.
-
----
-
-## 🗄️ PostgreSQL Schema Design
+## 🗄️ Database Schema Design (Relational)
 
 ### Core Entities
-The database schema includes the following entities:
-- User
-- Internship
-- Application
-- EligibilityTest
-- TestQuestion
-- TestAttempt
-- Feedback
 
-### Relationships & Constraints
-- One user can apply to multiple internships
-- One internship can have multiple applications
-- Each internship has one eligibility test
-- Each test contains multiple questions
-- Applications store mentor feedback
-- Foreign keys enforce relational integrity
-- Unique constraints prevent duplicate users
-- Cascade deletes ensure data consistency
+* User
+* Internship
+* Application
+* EligibilityTest
+* TestQuestion
+* TestAttempt
+* Feedback
+
+### Relationships
+
+* One user → many applications
+* One internship → many applications
+* One internship → one eligibility test
+* One test → many questions
+* One application → many feedback entries
+
+### Data Integrity
+
+* Foreign keys enforce relationships
+* Cascade deletes prevent orphaned records
+* Unique constraints prevent duplicate users
 
 ### Normalization
-- 1NF: All fields are atomic
-- 2NF: No partial dependency on composite keys
-- 3NF: No redundant or derived data stored
 
-### Scalability & Query Support
-This schema supports efficient querying for:
-- Fetching student applications
-- Listing applicants for an internship
-- Retrieving mentor feedback
-- Verifying eligibility test results
+* 1NF: Atomic fields
+* 2NF: No partial dependencies
+* 3NF: No redundant data
 
-The normalized design ensures scalability, consistency, and performance as the system grows.
+---
 
---- 
+## 🔐 Environment & Secrets Management
 
-### 📄 Pull Request (PR) Template
+* Environment variables are used for configuration
+* Sensitive values are never committed to the repository
+* `.env` files are excluded from version control
+* Production secrets are injected via CI/CD or cloud configuration
 
-A standardized Pull Request template is used to ensure clarity and consistency during reviews.
+### Required Variables
+
+#### Server-only
+
+* `DATABASE_URL` – Database connection string
+
+#### Client-side
+
+* `NEXT_PUBLIC_API_BASE_URL` – API base URL
+
+---
+
+## 🔀 Team Branching & PR Workflow
+
+HUSTL follows a structured GitHub workflow inspired by real-world engineering teams.
+
+### Branch Naming
+
+* `feature/<feature-name>`
+* `fix/<bug-name>`
+* `chore/<task-name>`
+* `docs/<update-name>`
+
+### Rules
+
+* No direct commits to `main`
+* All changes go through Pull Requests
+* Code reviews required before merge
+
+---
+
+## 📄 Pull Request Standards
+
 Each PR includes:
 
-* A brief summary of the change
-* A list of key updates
-* Screenshots or evidence (if applicable)
-* A checklist to verify build, review, and linkage to tasks
-
-This helps reviewers quickly understand the purpose and scope of each change.
+* Summary of changes
+* Key updates
+* Evidence or screenshots (if applicable)
+* Checklist for validation
 
 ---
 
-### ✅ Code Review Checklist
+## 🔒 Branch Protection
 
-Before merging any Pull Request, the following checks are performed:
+* PR required before merging
+* At least one approval required
+* All conversations must be resolved
 
-* Code follows the project’s structure and naming conventions
-* Functionality is tested locally
-* No console errors or warnings are present
-* Linting and formatting rules are satisfied
-* Documentation is updated where required
-* No sensitive data (API keys, secrets) is exposed
-
----
-
-### 🔒 Branch Protection Rules
-
-The `main` branch is protected using GitHub branch protection rules to enforce quality and consistency:
-
-* Pull Requests are required before merging
-* At least one approval is required
-* All review conversations must be resolved
-* Rules apply to all contributors, including administrators
-
-This ensures that only reviewed and validated changes are merged into the main branch.
-
----
-
-### 🔍 Workflow Reflection
-
-This workflow encourages disciplined collaboration by enforcing reviews and structured branching. It reduces the risk of unreviewed code reaching production, improves code quality, and enables the team to scale development efficiently.
-
----
-
-### 🎯 One-Line Summary
-
-> HUSTL uses a professional GitHub workflow with structured branching, PR templates, reviews, and protected branches to ensure high code quality and smooth team collaboration.
-
----
-
----
-## Environment Variables
-
-This project uses environment variables for configuration.
-
-### Server-only
-- DATABASE_URL – Database connection string
-
-### Client-side
-- NEXT_PUBLIC_API_BASE_URL – API base URL
-
-### Setup
-1. Copy `.env.example` to `.env.local`
-2. Fill in actual values
-3. Never commit `.env.local`
+This ensures code quality and traceability.
 
 ---
 
@@ -340,4 +236,3 @@ This project uses environment variables for configuration.
 > **HUSTL is where applications meet direction — and effort turns into outcomes.**
 
 ---
-

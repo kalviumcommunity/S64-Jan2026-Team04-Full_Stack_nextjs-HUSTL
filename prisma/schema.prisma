@@ -13,7 +13,6 @@ generator client {
   provider = "prisma-client-js"
 }
 
-
 model User {
   id           Int           @id @default(autoincrement())
   name         String
@@ -46,6 +45,10 @@ model Application {
   internship    Internship @relation(fields: [internshipId], references: [id], onDelete: Cascade)
   feedbacks     Feedback[]
   createdAt     DateTime    @default(now())
+
+  @@index([userId])
+  @@index([internshipId])
+  @@index([status])
 }
 
 model EligibilityTest {
@@ -53,17 +56,16 @@ model EligibilityTest {
   internshipId  Int             @unique
   internship    Internship      @relation(fields: [internshipId], references: [id], onDelete: Cascade)
   questions     TestQuestion[]
-  attempts      TestAttempt[]   // 👈 ADD THIS LINE
+  attempts      TestAttempt[]
 }
 
-
 model TestQuestion {
-  id        Int             @id @default(autoincrement())
+  id        Int              @id @default(autoincrement())
   testId    Int
   question  String
   options   String
   answer    String
-  test      EligibilityTest @relation(fields: [testId], references: [id], onDelete: Cascade)
+  test      EligibilityTest  @relation(fields: [testId], references: [id], onDelete: Cascade)
 }
 
 model TestAttempt {
@@ -75,6 +77,10 @@ model TestAttempt {
   user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   test      EligibilityTest @relation(fields: [testId], references: [id], onDelete: Cascade)
   createdAt DateTime        @default(now())
+
+  @@index([userId])
+  @@index([testId])
+  @@index([createdAt])
 }
 
 model Feedback {
@@ -85,6 +91,9 @@ model Feedback {
   mentor        User        @relation(fields: [mentorId], references: [id], onDelete: Cascade)
   application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
   createdAt     DateTime    @default(now())
+
+  @@index([mentorId])
+  @@index([applicationId])
 }
 
 enum Role {
@@ -92,4 +101,3 @@ enum Role {
   MENTOR
   ADMIN
 }
-
