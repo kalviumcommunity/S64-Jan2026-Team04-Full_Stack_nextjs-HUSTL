@@ -1,15 +1,12 @@
 import { NextResponse } from "next/server";
-import { userSchema } from "@/lib/schemas/userSchema";
+import { applicationSchema } from "@/lib/schemas/applicationSchema";
 import { ZodError } from "zod";
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
+    const data = applicationSchema.parse(body);
 
-    // Validation happens here
-    const data = userSchema.parse(body);
-
-    // Pretend DB logic
     return NextResponse.json(
       { success: true, data },
       { status: 201 }
