@@ -10,15 +10,20 @@
     "prepare": "husky install"
   },
   "lint-staged": {
-  "*.{ts,tsx,js,jsx}": ["eslint --fix", "prettier --write"]
-},
+    "*.{ts,tsx,js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  },
   "dependencies": {
+    "jsonwebtoken": "^9.0.3",
     "next": "16.1.5",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
