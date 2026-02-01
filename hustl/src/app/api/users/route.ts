@@ -1,72 +1,45 @@
-import { NextResponse } from "next/server";
+import { sendSuccess, sendError } from "@/lib/responseHandler";
 import { userSchema } from "@/lib/schemas/userSchema";
-import { ZodError } from "zod";
-import bcrypt from "bcrypt";
 import { prisma } from "@/lib/prisma";
-
+import bcrypt from "bcrypt";
 
 /**
  * POST /api/users
- * Create a new user (validated with Zod)
+ * Create a new user
  */
 export async function POST(req: Request) {
-  const body = await req.json();
-  const result = userSchema.safeParse(body);
+  try {
+    const body = await req.json();
+    const result = userSchema.safeParse(body);
 
-  if (!result.success) {
-    return NextResponse.json(
-      {
-        success: false,
-        message: "Validation Error",
-        errors: result.error.issues.map((issue) => ({
+    if (!result.success) {
+      return sendError(
+        "Validation Error",
+        "VALIDATION_ERROR",
+        400,
+        result.error.issues.map((issue) => ({
           field: issue.path.join("."),
           message: issue.message,
-        })),
-      },
-      { status: 400 }
-    );
-  }
+        }))
+      );
+    }
 
-  const data = result.data;
+    const { name, email, password } = result.data;
 
-  // 👉 DB logic would go here (e.g. prisma.user.create)
-
-  return NextResponse.json(
-    { success: true, data },
-    { status: 201 }
-  );
-}
-
-/**
- * PUT /api/users
- * Update an existing user (same schema reused)
- */
-export async function PUT(req: Request) {
-  const body = await req.json();
-
-  const result = userSchema.safeParse(body);
-
-  if (!result.success) {
-    // 1️⃣ Validate input using Zod
-    const data = userSchema.parse(body);
-    const { name, email, password } = data;
-
-    // 2️⃣ Check if user already exists
     const existingUser = await prisma.user.findUnique({
       where: { email },
     });
 
     if (existingUser) {
-      return NextResponse.json(
-        { success: false, message: "User already exists" },
-        { status: 400 }
+      return sendError(
+        "User already exists",
+        "USER_ALREADY_EXISTS",
+        400
       );
     }
 
-    // 3️⃣ Hash password using bcrypt
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // 4️⃣ Save user in DB
     const user = await prisma.user.create({
       data: {
         name,
@@ -75,46 +48,57 @@ export async function PUT(req: Request) {
       },
     });
 
-    return NextResponse.json(
-      { success: true, message: "Signup successful", user },
-      { status: 201 }
-    );
+    return sendSuccess(user, "User created successfully", 201);
   } catch (error) {
-    // Zod validation errors
-    if (error instanceof ZodError) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Validation Error",
-          errors: error.issues.map((e) => ({
-            field: e.path.join("."),
-            message: e.message,
-          })),
-        },
-        { status: 400 }
+    return sendError("Internal Server Error", "INTERNAL_ERROR", 500, error);
+  }
+}
+
+/**
+ * PUT /api/users
+ * Update user
+ */
+export async function PUT(req: Request) {
+  try {
+    const body = await req.json();
+    const result = userSchema.safeParse(body);
+
+    if (!result.success) {
+      return sendError(
+        "Validation Error",
+        "VALIDATION_ERROR",
+        400,
+        result.error.issues.map((issue) => ({
+          field: issue.path.join("."),
+          message: issue.message,
+        }))
       );
     }
 
-    // Server errors
-    return NextResponse.json(
-      {
-        success: false,
-        message: "Validation Error",
-        errors: result.error.issues.map((issue) => ({
-          field: issue.path.join("."),
-          message: issue.message,
-        })),
+    const { name, email, password } = result.data;
+
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!existingUser) {
+      return sendError(
+        "User not found",
+        "USER_NOT_FOUND",
+        404
+      );
+    }
+
+    const user = await prisma.user.update({
+      where: { email },
+      data: {
+        name,
+        password: await bcrypt.hash(password, 10),
       },
-      { status: 400 }
-    );
+    });
+
+    return sendSuccess(user, "User updated successfully", 200);
+  } catch (error) {
+    return sendError("Internal Server Error", "INTERNAL_ERROR", 500, error);
   }
-
-  const data = result.data;
-
-  // 👉 DB update logic would go here (e.g. prisma.user.update)
-
-  return NextResponse.json(
-    { success: true, data },
-    { status: 200 }
-  );
 }
