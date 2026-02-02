@@ -114,6 +114,40 @@ Indexes are managed using **Prisma migrations**, ensuring schema changes are ver
 
 ---
 
+## ☁️ Secure File Uploads with Pre-Signed URLs
+
+HUSTL implements secure file uploads using cloud storage pre-signed URLs.
+
+### Upload Flow
+Client → Request Pre-Signed URL → Upload Directly to Cloud → Store File URL in DB
+
+### Why Pre-Signed URLs?
+- Backend never handles raw files
+- No credentials exposed to clients
+- Scales efficiently for large uploads
+- Reduces server memory and load
+
+### Validation
+- Allowed types: images, PDFs
+- Max size: 5MB
+- Invalid uploads are rejected before URL generation
+
+### URL Expiry
+Upload URLs expire after 60 seconds to limit misuse and replay attacks.
+
+### Public vs Private Access
+For assignment testing, files are uploaded with public-read access.
+In production, files would be private and accessed via signed download URLs.
+
+### Lifecycle Management
+Cloud lifecycle policies can auto-delete files after a fixed period
+(e.g., 30 days) to reduce storage costs and prevent stale data buildup.
+
+### Security Reflection
+Public access simplifies sharing but increases exposure risk.
+Pre-signed URLs balance usability and security by granting time-limited access.
+
+
 ## 🧪 Performance Verification
 
 Query performance was validated using:
