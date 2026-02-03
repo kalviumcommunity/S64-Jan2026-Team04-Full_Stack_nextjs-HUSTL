@@ -147,6 +147,46 @@ Cloud lifecycle policies can auto-delete files after a fixed period
 Public access simplifies sharing but increases exposure risk.
 Pre-signed URLs balance usability and security by granting time-limited access.
 
+## 🧩 Reusable Layout & Component Architecture
+
+HUSTL uses a modular component-based architecture to ensure visual consistency,
+accessibility, and scalability across the application.
+
+### Component Hierarchy
+
+LayoutWrapper
+ ├── Header
+ ├── Sidebar
+ └── Page Content
+
+### Reusable Layout Components
+- Header: Global navigation and branding
+- Sidebar: Contextual navigation
+- LayoutWrapper: Shared layout template applied globally
+
+### Reusable UI Components
+- Button: Variant-based action component
+- Card: Generic content container
+
+### Props Contracts
+Each reusable component defines an explicit TypeScript interface for its props,
+making usage predictable, self-documenting, and type-safe.
+
+### Accessibility Considerations
+- Semantic HTML elements (`header`, `nav`, `aside`, `main`)
+- Keyboard-accessible navigation
+- Focus indicators for interactive elements
+- ARIA labels for navigation regions
+
+### Visual Consistency
+A shared layout ensures consistent spacing, navigation, and structure across
+all pages. Tailwind utility classes provide a unified design language.
+
+### Scalability Reflection
+This structure allows new pages and components to be added without duplicating
+layout logic. The trade-off is reduced per-page customization, which is an
+acceptable compromise for long-term maintainability.
+
 
 ## 🧪 Performance Verification
 
