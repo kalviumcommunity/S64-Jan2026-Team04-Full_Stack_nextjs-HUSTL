@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import redis from "@/lib/redis";
 import { userSchema } from "@/lib/schemas/userSchema";
 import { sendSuccess, sendError } from "@/lib/responseHandler";
+import { handleError } from "@/lib/errorHandler";
 import bcrypt from "bcrypt";
 
 /**
@@ -15,7 +16,6 @@ export async function GET() {
     // 1️⃣ Check Redis cache
     const cachedUsers = await redis.get(cacheKey);
     if (cachedUsers) {
-      console.log("Cache Hit");
       return sendSuccess(
         JSON.parse(cachedUsers),
         "Users fetched from cache",
@@ -24,20 +24,14 @@ export async function GET() {
     }
 
     // 2️⃣ Cache miss → fetch from DB
-    console.log("Cache Miss - Fetching from DB");
     const users = await prisma.user.findMany();
 
-    // 3️⃣ Store in Redis with TTL (60 seconds)
+    // 3️⃣ Store in Redis with TTL
     await redis.set(cacheKey, JSON.stringify(users), "EX", 60);
 
     return sendSuccess(users, "Users fetched from database", 200);
   } catch (error) {
-    return sendError(
-      "Failed to fetch users",
-      "FETCH_USERS_ERROR",
-      500,
-      error
-    );
+    return handleError(error, "GET /api/users");
   }
 }
 
@@ -95,12 +89,7 @@ export async function POST(req: Request) {
 
     return sendSuccess(user, "User created successfully", 201);
   } catch (error) {
-    return sendError(
-      "Internal Server Error",
-      "INTERNAL_ERROR",
-      500,
-      error
-    );
+    return handleError(error, "POST /api/users");
   }
 }
 
@@ -155,11 +144,6 @@ export async function PUT(req: Request) {
 
     return sendSuccess(updatedUser, "User updated successfully", 200);
   } catch (error) {
-    return sendError(
-      "Internal Server Error",
-      "INTERNAL_ERROR",
-      500,
-      error
-    );
+    return handleError(error, "PUT /api/users");
   }
 }
