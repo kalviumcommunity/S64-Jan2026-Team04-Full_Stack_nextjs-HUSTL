@@ -324,8 +324,40 @@ This ensures code quality and traceability.
 
 ---
 
+# Environment Variables
+
+Include:
+
+1️⃣ Table of variables
+
+Example:
+
+Variable	Description	Scope
+DATABASE_URL	PostgreSQL connection string	Server
+JWT_SECRET	JWT signing secret	Server
+REDIS_URL	Redis connection URL	Server
+NEXT_PUBLIC_APP_NAME	App name used in UI	Client
+NEXT_PUBLIC_API_URL	Base API URL	Client
+
+
+2️⃣ Explanation section
+
+.env.local stores real secrets and is ignored by Git.
+
+.env.example provides structure for other developers.
+
+Server-only variables are accessed via process.env.
+
+Client variables use NEXT_PUBLIC_ prefix.
+
+Sensitive data is protected from exposure.
+
+---
+
 ## ⭐ Final Line
 
 > **HUSTL is where applications meet direction — and effort turns into outcomes.**
 
 ---
+
+
