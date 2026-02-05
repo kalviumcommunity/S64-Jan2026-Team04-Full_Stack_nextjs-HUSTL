@@ -206,6 +206,32 @@ This structure allows new pages and components to be added without duplicating
 layout logic. The trade-off is reduced per-page customization, which is an
 acceptable compromise for long-term maintainability.
 
+## ⏳ Loading States & Error Handling
+
+HUSTL uses Next.js App Router’s built-in `loading.js` and `error.js` files
+to handle slow or failed data fetching gracefully.
+
+### Loading Fallbacks
+Skeleton UIs are displayed while async data is loading, providing immediate
+visual feedback and preventing layout shifts.
+
+### Error Boundaries
+Route-level error boundaries catch rendering and data-fetching failures,
+display a friendly message, and allow users to retry without a full page reload.
+
+### Retry Logic
+The retry button uses Next.js’s `reset()` function to re-render the route
+after a failure, improving resilience and recovery.
+
+### User Experience Benefits
+- Reduces confusion during slow network conditions
+- Prevents blank or broken screens
+- Builds user trust through clear feedback and recovery options
+
+### Reflection
+Loading and error fallbacks improve perceived performance and reliability.
+By explicitly handling failure states, the application feels more stable
+and predictable even under poor network conditions.
 
 ## 🧪 Performance Verification
 
