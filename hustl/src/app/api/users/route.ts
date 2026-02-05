@@ -3,6 +3,7 @@ import redis from "@/lib/redis";
 import { userSchema } from "@/lib/schemas/userSchema";
 import { sendSuccess, sendError } from "@/lib/responseHandler";
 import { handleError } from "@/lib/errorHandler";
+import { Role } from "@prisma/client";
 import bcrypt from "bcrypt";
 
 /**
@@ -77,12 +78,14 @@ export async function POST(req: Request) {
 
     // 4️⃣ Create user
     const user = await prisma.user.create({
-      data: {
-        name,
-        email,
-        password: hashedPassword,
-      },
-    });
+  data: {
+    name,
+    email,
+    password: hashedPassword,
+    role: Role.STUDENT,
+  },
+});
+
 
     // 5️⃣ Invalidate cache
     await redis.del("users:list");
