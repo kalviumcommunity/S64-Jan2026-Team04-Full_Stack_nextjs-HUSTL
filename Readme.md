@@ -152,6 +152,25 @@ Pre-signed URLs balance usability and security by granting time-limited access.
 HUSTL uses a modular component-based architecture to ensure visual consistency,
 accessibility, and scalability across the application.
 
+## 📝 Forms with React Hook Form & Zod
+
+HUSTL uses React Hook Form (RHF) with Zod to build dynamic, accessible,
+and type-safe forms.
+
+### Form Setup
+- RHF manages form state and submission
+- Zod defines the validation schema
+- `zodResolver` binds schema validation to RHF
+
+### Reusable Input Components
+Common input logic is extracted into a reusable `FormInput` component,
+reducing duplication and enforcing consistent validation and styling.
+
+### Validation Behavior
+- Errors appear when validation fails
+- Invalid submissions are blocked automatically
+- Success feedback is shown on valid data
+
 ### Component Hierarchy
 
 LayoutWrapper
