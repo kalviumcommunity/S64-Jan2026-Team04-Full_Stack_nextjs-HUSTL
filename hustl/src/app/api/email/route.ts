@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import sendgrid from "@sendgrid/mail";
+import { applyCorsHeaders } from "@/lib/cors";
 
 sendgrid.setApiKey(process.env.SENDGRID_API_KEY!);
 
@@ -18,12 +19,17 @@ export async function POST(req: Request) {
 
     console.log("Email sent:", response[0].headers);
 
-    return NextResponse.json({ success: true });
+    return applyCorsHeaders(
+      NextResponse.json({ success: true })
+    );
   } catch (error) {
     console.error("Email send failed:", error);
-    return NextResponse.json(
-      { success: false },
-      { status: 500 }
+
+    return applyCorsHeaders(
+      NextResponse.json(
+        { success: false },
+        { status: 500 }
+      )
     );
   }
 }

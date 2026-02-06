@@ -3,6 +3,7 @@ import redis from "@/lib/redis";
 import { userSchema } from "@/lib/schemas/userSchema";
 import { sendSuccess, sendError } from "@/lib/responseHandler";
 import { handleError } from "@/lib/errorHandler";
+import { applyCorsHeaders } from "@/lib/cors";
 import { Role } from "@prisma/client";
 import bcrypt from "bcrypt";
 
@@ -14,25 +15,28 @@ export async function GET() {
   try {
     const cacheKey = "users:list";
 
-    // 1️⃣ Check Redis cache
     const cachedUsers = await redis.get(cacheKey);
     if (cachedUsers) {
-      return sendSuccess(
-        JSON.parse(cachedUsers),
-        "Users fetched from cache",
-        200
+      return applyCorsHeaders(
+        sendSuccess(
+          JSON.parse(cachedUsers),
+          "Users fetched from cache",
+          200
+        )
       );
     }
 
-    // 2️⃣ Cache miss → fetch from DB
     const users = await prisma.user.findMany();
 
-    // 3️⃣ Store in Redis with TTL
     await redis.set(cacheKey, JSON.stringify(users), "EX", 60);
 
-    return sendSuccess(users, "Users fetched from database", 200);
+    return applyCorsHeaders(
+      sendSuccess(users, "Users fetched from database", 200)
+    );
   } catch (error) {
-    return handleError(error, "GET /api/users");
+    return applyCorsHeaders(
+      handleError(error, "GET /api/users")
+    );
   }
 }
 
@@ -45,54 +49,56 @@ export async function POST(req: Request) {
     const body = await req.json();
     const result = userSchema.safeParse(body);
 
-    // 1️⃣ Validate request body
     if (!result.success) {
-      return sendError(
-        "Validation Error",
-        "VALIDATION_ERROR",
-        400,
-        result.error.issues.map((issue) => ({
-          field: issue.path.join("."),
-          message: issue.message,
-        }))
+      return applyCorsHeaders(
+        sendError(
+          "Validation Error",
+          "VALIDATION_ERROR",
+          400,
+          result.error.issues.map((issue) => ({
+            field: issue.path.join("."),
+            message: issue.message,
+          }))
+        )
       );
     }
 
     const { name, email, password } = result.data;
 
-    // 2️⃣ Check if user already exists
     const existingUser = await prisma.user.findUnique({
       where: { email },
     });
 
     if (existingUser) {
-      return sendError(
-        "User already exists",
-        "USER_ALREADY_EXISTS",
-        400
+      return applyCorsHeaders(
+        sendError(
+          "User already exists",
+          "USER_ALREADY_EXISTS",
+          400
+        )
       );
     }
 
-    // 3️⃣ Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // 4️⃣ Create user
     const user = await prisma.user.create({
-  data: {
-    name,
-    email,
-    password: hashedPassword,
-    role: Role.STUDENT,
-  },
-});
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        role: Role.STUDENT,
+      },
+    });
 
-
-    // 5️⃣ Invalidate cache
     await redis.del("users:list");
 
-    return sendSuccess(user, "User created successfully", 201);
+    return applyCorsHeaders(
+      sendSuccess(user, "User created successfully", 201)
+    );
   } catch (error) {
-    return handleError(error, "POST /api/users");
+    return applyCorsHeaders(
+      handleError(error, "POST /api/users")
+    );
   }
 }
 
@@ -105,35 +111,36 @@ export async function PUT(req: Request) {
     const body = await req.json();
     const result = userSchema.safeParse(body);
 
-    // 1️⃣ Validate request body
     if (!result.success) {
-      return sendError(
-        "Validation Error",
-        "VALIDATION_ERROR",
-        400,
-        result.error.issues.map((issue) => ({
-          field: issue.path.join("."),
-          message: issue.message,
-        }))
+      return applyCorsHeaders(
+        sendError(
+          "Validation Error",
+          "VALIDATION_ERROR",
+          400,
+          result.error.issues.map((issue) => ({
+            field: issue.path.join("."),
+            message: issue.message,
+          }))
+        )
       );
     }
 
     const { name, email, password } = result.data;
 
-    // 2️⃣ Check if user exists
     const existingUser = await prisma.user.findUnique({
       where: { email },
     });
 
     if (!existingUser) {
-      return sendError(
-        "User not found",
-        "USER_NOT_FOUND",
-        404
+      return applyCorsHeaders(
+        sendError(
+          "User not found",
+          "USER_NOT_FOUND",
+          404
+        )
       );
     }
 
-    // 3️⃣ Update user
     const updatedUser = await prisma.user.update({
       where: { email },
       data: {
@@ -142,11 +149,14 @@ export async function PUT(req: Request) {
       },
     });
 
-    // 4️⃣ Invalidate cache
     await redis.del("users:list");
 
-    return sendSuccess(updatedUser, "User updated successfully", 200);
+    return applyCorsHeaders(
+      sendSuccess(updatedUser, "User updated successfully", 200)
+    );
   } catch (error) {
-    return handleError(error, "PUT /api/users");
+    return applyCorsHeaders(
+      handleError(error, "PUT /api/users")
+    );
   }
 }
