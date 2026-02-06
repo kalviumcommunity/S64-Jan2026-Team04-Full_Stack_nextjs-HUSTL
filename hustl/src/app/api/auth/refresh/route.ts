@@ -5,12 +5,18 @@ import {
   generateRefreshToken,
   verifyRefreshToken,
 } from "@/lib/jwt";
+import { applyCorsHeaders } from "@/lib/cors";
 
 export async function POST() {
   const refreshToken = (await cookies()).get("refreshToken")?.value;
 
   if (!refreshToken) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    return applyCorsHeaders(
+      NextResponse.json(
+        { message: "Unauthorized" },
+        { status: 401 }
+      )
+    );
   }
 
   try {
@@ -30,7 +36,9 @@ export async function POST() {
 
     console.log("Refresh token rotated");
 
-    const response = NextResponse.json({ message: "Token refreshed" });
+    const response = NextResponse.json({
+      message: "Token refreshed",
+    });
 
     response.cookies.set("accessToken", newAccessToken, {
       httpOnly: true,
@@ -46,8 +54,13 @@ export async function POST() {
       maxAge: 60 * 60 * 24 * 7,
     });
 
-    return response;
+    return applyCorsHeaders(response);
   } catch {
-    return NextResponse.json({ message: "Invalid refresh token" }, { status: 401 });
+    return applyCorsHeaders(
+      NextResponse.json(
+        { message: "Invalid refresh token" },
+        { status: 401 }
+      )
+    );
   }
 }
