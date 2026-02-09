@@ -1,5 +1,18 @@
 import "./globals.css";
 import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import { LayoutWrapper } from "@/components";
+import "./globals.css";
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
 
 export const metadata: Metadata = {
   title: "HUSTL – Hustle Smarter",
@@ -13,8 +26,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="bg-background text-textPrimary antialiased">
-        {children}
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        <LayoutWrapper>{children}</LayoutWrapper>
       </body>
     </html>
   );

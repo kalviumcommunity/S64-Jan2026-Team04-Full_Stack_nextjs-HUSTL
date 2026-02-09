@@ -1,5 +1,7 @@
+import "dotenv/config";
 import { defineConfig } from "prisma/config";
 
+
 export default defineConfig({
-  seed: "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts",
+  schema: "prisma/schema.prisma",
 });

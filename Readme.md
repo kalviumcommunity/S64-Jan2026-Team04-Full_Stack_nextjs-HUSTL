@@ -152,6 +152,25 @@ Pre-signed URLs balance usability and security by granting time-limited access.
 HUSTL uses a modular component-based architecture to ensure visual consistency,
 accessibility, and scalability across the application.
 
+## 📝 Forms with React Hook Form & Zod
+
+HUSTL uses React Hook Form (RHF) with Zod to build dynamic, accessible,
+and type-safe forms.
+
+### Form Setup
+- RHF manages form state and submission
+- Zod defines the validation schema
+- `zodResolver` binds schema validation to RHF
+
+### Reusable Input Components
+Common input logic is extracted into a reusable `FormInput` component,
+reducing duplication and enforcing consistent validation and styling.
+
+### Validation Behavior
+- Errors appear when validation fails
+- Invalid submissions are blocked automatically
+- Success feedback is shown on valid data
+
 ### Component Hierarchy
 
 LayoutWrapper
@@ -187,6 +206,32 @@ This structure allows new pages and components to be added without duplicating
 layout logic. The trade-off is reduced per-page customization, which is an
 acceptable compromise for long-term maintainability.
 
+## ⏳ Loading States & Error Handling
+
+HUSTL uses Next.js App Router’s built-in `loading.js` and `error.js` files
+to handle slow or failed data fetching gracefully.
+
+### Loading Fallbacks
+Skeleton UIs are displayed while async data is loading, providing immediate
+visual feedback and preventing layout shifts.
+
+### Error Boundaries
+Route-level error boundaries catch rendering and data-fetching failures,
+display a friendly message, and allow users to retry without a full page reload.
+
+### Retry Logic
+The retry button uses Next.js’s `reset()` function to re-render the route
+after a failure, improving resilience and recovery.
+
+### User Experience Benefits
+- Reduces confusion during slow network conditions
+- Prevents blank or broken screens
+- Builds user trust through clear feedback and recovery options
+
+### Reflection
+Loading and error fallbacks improve perceived performance and reliability.
+By explicitly handling failure states, the application feels more stable
+and predictable even under poor network conditions.
 
 ## 🧪 Performance Verification
 
@@ -305,8 +350,40 @@ This ensures code quality and traceability.
 
 ---
 
+# Environment Variables
+
+Include:
+
+1️⃣ Table of variables
+
+Example:
+
+Variable	Description	Scope
+DATABASE_URL	PostgreSQL connection string	Server
+JWT_SECRET	JWT signing secret	Server
+REDIS_URL	Redis connection URL	Server
+NEXT_PUBLIC_APP_NAME	App name used in UI	Client
+NEXT_PUBLIC_API_URL	Base API URL	Client
+
+
+2️⃣ Explanation section
+
+.env.local stores real secrets and is ignored by Git.
+
+.env.example provides structure for other developers.
+
+Server-only variables are accessed via process.env.
+
+Client variables use NEXT_PUBLIC_ prefix.
+
+Sensitive data is protected from exposure.
+
+---
+
 ## ⭐ Final Line
 
 > **HUSTL is where applications meet direction — and effort turns into outcomes.**
 
 ---
+
+
