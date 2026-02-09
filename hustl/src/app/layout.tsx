@@ -1,3 +1,4 @@
+import "./globals.css";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { LayoutWrapper } from "@/components";
@@ -14,15 +15,15 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "HUSTL",
-  description: "Unified internship and mentorship platform",
+  title: "HUSTL – Hustle Smarter",
+  description: "Unified internship and mentorship platform for students",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
       <body

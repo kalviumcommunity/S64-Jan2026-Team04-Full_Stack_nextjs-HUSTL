@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { sendSuccess, sendError } from "@/lib/responseHandler";
 
 const s3 = new S3Client({
   region: process.env.AWS_REGION!,
@@ -16,46 +16,68 @@ export async function POST(req: Request) {
   try {
     const { filename, fileType, fileSize } = await req.json();
 
-    // 1️⃣ Validate file type
+    // ✅ Basic validation
+    if (!filename || !fileType || !fileSize) {
+      return sendError(
+        "Missing required fields",
+        "INVALID_INPUT",
+        400
+      );
+    }
+
+    // ✅ Validate file type
     if (
       !fileType.startsWith("image/") &&
       fileType !== "application/pdf"
     ) {
-      return NextResponse.json(
-        { success: false, message: "Unsupported file type" },
-        { status: 400 }
+      return sendError(
+        "Unsupported file type",
+        "INVALID_FILE_TYPE",
+        400
       );
     }
 
-    // 2️⃣ Validate file size
+    // ✅ Validate file size
     if (fileSize > MAX_FILE_SIZE) {
-      return NextResponse.json(
-        { success: false, message: "File too large (max 5MB)" },
-        { status: 400 }
+      return sendError(
+        "File too large (max 5MB)",
+        "FILE_TOO_LARGE",
+        400
       );
     }
 
-    // 3️⃣ Create pre-signed PUT command
+    // ✅ Prevent filename collisions
+    const uniqueKey = `${Date.now()}-${filename}`;
+
     const command = new PutObjectCommand({
       Bucket: process.env.AWS_BUCKET_NAME!,
-      Key: filename,
+      Key: uniqueKey,
       ContentType: fileType,
       ACL: "public-read",
     });
 
     const uploadURL = await getSignedUrl(s3, command, {
-      expiresIn: 60, // 1 minute
+      expiresIn: 60,
     });
 
-    return NextResponse.json({
-      success: true,
-      uploadURL,
-    });
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const fileURL = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${uniqueKey}`;
+
+    return sendSuccess(
+      {
+        uploadURL,
+        fileURL,
+        key: uniqueKey,
+      },
+      "Upload URL generated successfully"
+    );
   } catch (error) {
-    return NextResponse.json(
-      { success: false, message: "Failed to generate upload URL" },
-      { status: 500 }
+    console.error("Upload URL generation failed:", error);
+
+    return sendError(
+      "Failed to generate upload URL",
+      "UPLOAD_ERROR",
+      500,
+      error
     );
   }
 }
