@@ -260,6 +260,35 @@ S3 lifecycle rules can be applied to auto-delete or archive files
 Using pre-signed URLs ensures credentials are never exposed
 and allows uploads to scale without increasing backend load.
 
+## 🔒 Custom Domain & SSL/TLS Configuration
+
+HUSTL is mapped to a custom domain and secured using HTTPS with
+TLS certificates managed by AWS Certificate Manager (ACM).
+
+### DNS Configuration
+- Route 53 public hosted zone created for the domain
+- A (Alias) record maps the root domain to the application load balancer
+- CNAME record maps `www` to the root domain
+
+### SSL Certificate
+- Public certificate issued via AWS Certificate Manager
+- DNS validation used for automated issuance and renewal
+- Wildcard domain (`*.myapp.com`) included for subdomain support
+
+### HTTPS Enforcement
+- HTTP traffic is redirected to HTTPS at the load balancer level
+- Optional application-level redirects enforce HTTPS as defense-in-depth
+
+### Security Reflection
+Using ACM ensures certificates are automatically renewed with no downtime.
+TLS encryption protects data in transit and builds user trust through
+browser-verified HTTPS connections.
+
+### Multi-Environment Strategy
+Separate domains or subdomains (e.g., `staging.myapp.com`) can be routed
+to different environments using DNS records and additional certificates.
+
+
 ## 🧪 Performance Verification
 
 Query performance was validated using:
