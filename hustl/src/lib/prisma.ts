@@ -1,11 +1,20 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
+import { getSecrets } from "./secret";
 
-const globalForPrisma = global as unknown as { prisma: PrismaClient };
+let prisma: PrismaClient;
 
-export const prisma =
-  globalForPrisma.prisma ||
-  new PrismaClient({
-    log: ['query', 'info', 'warn', 'error'],
-  });
+export async function getPrisma() {
+  if (!prisma) {
+    const secrets = await getSecrets();
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
+    prisma = new PrismaClient({
+      datasources: {
+        db: {
+          url: secrets.DATABASE_URL,
+        },
+      },
+    });
+  }
+
+  return prisma;
+}
