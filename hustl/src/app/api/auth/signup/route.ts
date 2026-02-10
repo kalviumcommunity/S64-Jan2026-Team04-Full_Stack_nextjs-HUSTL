@@ -1,21 +1,15 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import { prisma } from "@/lib/prisma";
-import { applyCorsHeaders } from "@/lib/cors";
-import { Role } from "@prisma/client";
-
-
 
 export async function POST(req: Request) {
   try {
-    const { name, email, password } = await req.json();
+    const { name, email, password, role } = await req.json();
 
     if (!name || !email || !password) {
-      return applyCorsHeaders(
-        NextResponse.json(
-          { message: "All fields are required" },
-          { status: 400 }
-        )
+      return NextResponse.json(
+        { message: "Missing required fields" },
+        { status: 400 }
       );
     }
 
@@ -24,11 +18,9 @@ export async function POST(req: Request) {
     });
 
     if (existingUser) {
-      return applyCorsHeaders(
-        NextResponse.json(
-          { message: "User already exists" },
-          { status: 400 }
-        )
+      return NextResponse.json(
+        { message: "User already exists" },
+        { status: 409 }
       );
     }
 
@@ -39,24 +31,26 @@ export async function POST(req: Request) {
         name,
         email,
         password: hashedPassword,
-        role: Role.STUDENT
-
-
+        role: role || "STUDENT",
       },
     });
 
-    return applyCorsHeaders(
-      NextResponse.json(
-        { message: "Signup successful", user },
-        { status: 201 }
-      )
+    return NextResponse.json(
+      {
+        message: "Signup successful",
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
+      },
+      { status: 201 }
     );
   } catch (error) {
-    return applyCorsHeaders(
-      NextResponse.json(
-        { message: "Signup failed", error },
-        { status: 500 }
-      )
+    return NextResponse.json(
+      { message: "Signup failed" },
+      { status: 500 }
     );
   }
 }
