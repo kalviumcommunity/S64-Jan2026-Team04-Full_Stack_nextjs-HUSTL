@@ -233,6 +233,33 @@ Loading and error fallbacks improve perceived performance and reliability.
 By explicitly handling failure states, the application feels more stable
 and predictable even under poor network conditions.
 
+## ☁️ Secure File Uploads with Cloud Object Storage
+
+HUSTL uses AWS S3 with pre-signed URLs to securely handle file uploads.
+
+### Upload Flow
+Client → Request Pre-Signed URL → Upload Directly to S3 → Optional Retrieval via Signed URL
+
+### Security Measures
+- Private S3 bucket (public access blocked)
+- Least-privilege IAM permissions
+- Short-lived pre-signed URLs (60s)
+- Server-side file validation (type + size)
+- Client-side validation to reduce misuse
+
+### File Validation
+- Allowed types: JPG, PNG
+- Max size: 2MB
+- Invalid files rejected before URL generation
+
+### Lifecycle Considerations
+S3 lifecycle rules can be applied to auto-delete or archive files
+(e.g., after 30 days) to control storage cost and data retention.
+
+### Security Reflection
+Using pre-signed URLs ensures credentials are never exposed
+and allows uploads to scale without increasing backend load.
+
 ## 🧪 Performance Verification
 
 Query performance was validated using:
