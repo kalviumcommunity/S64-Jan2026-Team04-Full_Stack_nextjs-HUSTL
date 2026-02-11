@@ -1,4 +1,7 @@
+"use client";
+
 import { ReactNode } from "react";
+import { usePathname } from "next/navigation";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 
@@ -7,6 +10,13 @@ interface LayoutWrapperProps {
 }
 
 export default function LayoutWrapper({ children }: LayoutWrapperProps) {
+  const pathname = usePathname();
+  const isPublicPage = ["/", "/login", "/signup", "/upload-test"].includes(pathname);
+
+  if (isPublicPage) {
+    return <>{children}</>;
+  }
+
   return (
     <div className="flex flex-col h-screen">
       <Header />
