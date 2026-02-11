@@ -1,0 +1,35 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run Unit Tests
+        run: npm test -- --coverage
+
+      - name: Run Smoke Tests
+        run: npx jest __smoke_tests__ --runInBand
+
+      - name: Rollback Deployment
+        if: failure()
+        run: |
+          echo "Deployment failed — rolling back..."
+
