@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { getSecrets } from "./secret";
 
-let prisma: PrismaClient;
+export let prisma: PrismaClient;
 
 export async function getPrisma() {
   if (!prisma) {

@@ -137,7 +137,7 @@ export default function LandingPage() {
           </div>
           
           <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 mb-6">
-            Your internship journey shouldn't feel like chaos
+            Your internship journey shouldnt feel like chaos
           </h2>
           
           <p className="text-xl text-slate-600 leading-relaxed mb-12">
@@ -280,7 +280,7 @@ export default function LandingPage() {
               Built for every role in the journey
             </h2>
             <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-              Whether you're searching, mentoring, or managing—HUSTL adapts to you
+              Whether youre searching, mentoring, or managing—HUSTL adapts to you
             </p>
           </div>
           

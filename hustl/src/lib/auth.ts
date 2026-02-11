@@ -1,3 +1,5 @@
-const secrets = await getSecrets();
+import jwt from "jsonwebtoken";
 
-jwt.sign(payload, secrets.JWT_SECRET);
+export function generateToken(payload: object) {
+  return jwt.sign(payload, process.env.JWT_SECRET!);
+}
