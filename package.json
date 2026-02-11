@@ -1,13 +1,17 @@
 {
   "devDependencies": {
+    "@storybook/nextjs-vite": "^10.2.4",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
     "@types/jest": "^30.0.0",
     "@types/node": "^25.0.10",
+    "jest": "^30.2.0",
     "prisma": "^6.19.2",
+    "storybook": "^10.2.4",
     "ts-jest": "^29.4.6",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
-    "storybook": "^10.2.4",
-    "@storybook/nextjs-vite": "^10.2.4",
     "vite": "^7.3.1"
   },
   "dependencies": {
@@ -21,6 +25,7 @@
   },
   "scripts": {
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "test": "jest"
   }
 }
