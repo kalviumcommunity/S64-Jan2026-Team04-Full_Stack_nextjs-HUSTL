@@ -288,6 +288,33 @@ browser-verified HTTPS connections.
 Separate domains or subdomains (e.g., `staging.myapp.com`) can be routed
 to different environments using DNS records and additional certificates.
 
+## 🔁 Continuous Integration (CI)
+
+HUSTL uses GitHub Actions to automate code validation on every
+push and pull request.
+
+### Workflow Location
+`.github/workflows/ci.yml`
+
+### Pipeline Stages
+1. Install Dependencies
+2. Run ESLint
+3. Execute Unit Tests (with coverage)
+4. Build Next.js Application
+5. Deploy (main branch only)
+
+### Optimizations
+- Node dependency caching enabled
+- Concurrency control prevents overlapping runs
+- Separate deploy stage triggered only on main branch
+
+### Secrets Management
+Deployment credentials are stored securely using GitHub Secrets.
+No sensitive keys are committed to the repository.
+
+### Reflection
+CI ensures code quality, stability, and consistent builds across environments.
+It prevents broken code from reaching production and enables safe collaboration.
 
 ## 🧪 Performance Verification
 
